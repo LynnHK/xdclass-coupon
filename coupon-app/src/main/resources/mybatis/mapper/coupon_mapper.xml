@@ -1,6 +1,55 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xdclass.couponapp.dao.CouponDAO">
+    <resultMap id="couponInfo" type="com.xdclass.couponapp.dto.CouponDTO">
+        <result column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="pic_url" property="picUrl"/>
+        <result column="achieve_amount" property="achieveAmount"/>
+        <result column="reduce_amount" property="reduceAmount"/>
+        <result column="stock" property="stock"/>
+        <result column="title" property="title"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
 
-</beans>
+    <sql id="coupon_base_column_list">
+		id, code, pic_url, achieve_amount, reduce_amount, stock, title, status, create_time, update_time
+	</sql>
+
+    <select id="getCouponByCode" parameterType="java.lang.String" resultMap="couponInfo">
+        select
+         <include refid="coupon_base_column_list"/>
+          from t_coupon
+         where code = #{code}
+           and status = 0
+    </select>
+
+    <insert id="insertCoupon" parameterType="com.xdclass.couponapp.dto.CouponDTO" keyProperty="id" useGeneratedKeys="true">
+        insert into t_coupon(code, pic_url, achieve_amount, reduce_amount, stock, title, create_time, update_time)
+             values (#{code}, #{picUrl}, #{achieveAmount}, #{reduceAmount}, #{stock}, #{title}, sysdate(), sysdate())
+    </insert>
+
+    <update id="updateCouponByCode" parameterType="com.xdclass.couponapp.dto.CouponDTO">
+        update t_coupon
+           set pic_url = #{picUrl},
+               achieve_amount = #{achieveAmount},
+               reduce_amount = #{reduceAmount},
+               stock = #{stock},
+               title = #{title},
+               status = #{status},
+               update_time = sysdate()
+         where code = #{code}
+           and status = 0
+    </update>
+
+    <update id="deleteCouponByCode" parameterType="com.xdclass.couponapp.dto.CouponDTO">
+        update t_coupon
+           set status = 1
+         where code = #{code}
+           and status = 0
+    </update>
+
+</mapper>
